@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ToolCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  tools       Tool[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ToolTag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  tools     Tool[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tool {
+  id               String       @id @default(cuid())
+  name             String
+  slug             String       @unique
+  shortDescription String
+  longDescription  String?
+  toolUrl          String
+  logoUrl          String?
+  pricingType      PricingType  @default(FREE)
+  isFeatured       Boolean      @default(false)
+  isSponsored      Boolean      @default(false)
+  rating           Float?
+  categoryId       String?
+  category         ToolCategory? @relation(fields: [categoryId], references: [id])
+  tags             ToolTag[]
+  viewCount        Int          @default(0)
+  clickCount       Int          @default(0)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([isFeatured])
+  @@index([isSponsored])
+  @@index([categoryId])
+}
+
+enum PricingType {
+  FREE
+  FREEMIUM
+  PAID
+}
