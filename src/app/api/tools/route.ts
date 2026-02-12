@@ -1,40 +1,20 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+
+const sampleTools = [
+  { id: '1', name: 'HubSpot', slug: 'hubspot', shortDescription: 'CRM platform with marketing, sales, and customer service tools', pricingType: 'FREEMIUM', isFeatured: true, isSponsored: true, rating: 4.5, category: { name: 'Marketing', slug: 'marketing' } },
+  { id: '2', name: 'Canva', slug: 'canva', shortDescription: 'Online design platform for creating graphics and presentations', pricingType: 'FREEMIUM', isFeatured: true, isSponsored: false, rating: 4.7, category: { name: 'Design', slug: 'design' } },
+  { id: '3', name: 'Notion', slug: 'notion', shortDescription: 'All-in-one workspace for notes, docs, and project management', pricingType: 'FREEMIUM', isFeatured: true, isSponsored: false, rating: 4.8, category: { name: 'Productivity', slug: 'productivity' } },
+  { id: '4', name: 'GitHub', slug: 'github', shortDescription: 'Platform for hosting and collaborating on Git repositories', pricingType: 'FREEMIUM', isFeatured: false, isSponsored: false, rating: 4.9, category: { name: 'Development', slug: 'development' } },
+  { id: '5', name: 'Figma', slug: 'figma', shortDescription: 'Collaborative interface design tool for teams', pricingType: 'FREEMIUM', isFeatured: true, isSponsored: true, rating: 4.8, category: { name: 'Design', slug: 'design' } },
+  { id: '6', name: 'Slack', slug: 'slack', shortDescription: 'Team communication and collaboration platform', pricingType: 'FREEMIUM', isFeatured: false, isSponsored: false, rating: 4.6, category: { name: 'Productivity', slug: 'productivity' } },
+  { id: '7', name: 'ChatGPT', slug: 'chatgpt', shortDescription: 'AI-powered conversational assistant by OpenAI', pricingType: 'FREEMIUM', isFeatured: true, isSponsored: false, rating: 4.7, category: { name: 'Productivity', slug: 'productivity' } },
+  { id: '8', name: 'VS Code', slug: 'vs-code', shortDescription: 'Free source code editor with debugging and Git', pricingType: 'FREE', isFeatured: false, isSponsored: false, rating: 4.9, category: { name: 'Development', slug: 'development' } },
+];
 
 export async function GET() {
-  const tools = await db.tool.findMany({
-    include: {
-      category: { select: { name: true, slug: true } },
-      tags: { select: { id: true, name: true, slug: true } },
-    },
-    orderBy: [{ isFeatured: 'desc' }, { isSponsored: 'desc' }, { createdAt: 'desc' }],
-  });
-
-  return NextResponse.json({ tools });
+  return NextResponse.json({ tools: sampleTools });
 }
 
-export async function POST(request: Request) {
-  try {
-    const data = await request.json();
-    const tool = await db.tool.create({
-      data: {
-        name: data.name,
-        slug: data.slug || data.name.toLowerCase().replace(/\s+/g, '-'),
-        shortDescription: data.shortDescription,
-        longDescription: data.longDescription,
-        toolUrl: data.toolUrl,
-        logoUrl: data.logoUrl,
-        pricingType: data.pricingType || 'FREE',
-        isFeatured: data.isFeatured || false,
-        isSponsored: data.isSponsored || false,
-        rating: data.rating,
-        categoryId: data.categoryId,
-        tags: data.tagIds ? { connect: data.tagIds.map((id: string) => ({ id })) } : undefined,
-      },
-      include: { category: true, tags: true },
-    });
-    return NextResponse.json({ tool });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to create tool' }, { status: 500 });
-  }
+export async function POST() {
+  return NextResponse.json({ error: 'Not available in demo mode' }, { status: 400 });
 }
